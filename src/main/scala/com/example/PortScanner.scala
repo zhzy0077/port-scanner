@@ -36,7 +36,7 @@ object PortScanner {
   private def tcpScan(ip: String, ports: Range)(implicit executionContext: ExecutionContext): Seq[(Int, Future[Boolean])] = {
     var futures = Seq.empty[(Int, Future[Boolean])]
     for (port <- ports) {
-      val future = Future(isTcpListen(ip, port))(executionContext)
+      val future = Future(isTcpListen(ip, port))
       futures = (port -> future) +: futures
     }
     futures
@@ -45,7 +45,7 @@ object PortScanner {
   private def udpScan(ip: String, ports: Range)(implicit executionContext: ExecutionContext): Seq[(Int, Future[Boolean])] = {
     var futures = Seq.empty[(Int, Future[Boolean])]
     for (port <- ports) {
-      val future = Future(isUdpListen(ip, port))(executionContext)
+      val future = Future(isUdpListen(ip, port))
       futures = (port -> future) +: futures
     }
     futures
@@ -54,7 +54,7 @@ object PortScanner {
   private def synScan(ip: String, ports: Range)(implicit executionContext: ExecutionContext): Seq[(Int, Future[Boolean])] = {
     var futures = Seq.empty[(Int, Future[Boolean])]
     for (port <- ports) {
-      val future = Future(isSynListen(ip, port))(executionContext)
+      val future = Future(isSynListen(ip, port))
       futures = (port -> future) +: futures
     }
     futures
@@ -85,11 +85,12 @@ object PortScanner {
     try {
       datagramSocket = new DatagramSocket()
       datagramSocket.connect(InetAddress.getByName(hostname), port)
+      datagramSocket.setSoTimeout(1000)
       datagramSocket.send(datagramPacket)
       datagramSocket.receive(datagramPacket)
       true
     } catch {
-      case e: Exception =>
+      case _: Exception =>
         false
     } finally {
       if (datagramSocket != null) {

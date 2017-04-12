@@ -89,17 +89,18 @@ class App extends Application {
           val response = PortScanner.scan(request)
           progressBar.setProgress(0)
           resultArea.setText("TYPE    PORT    STATUS\n")
-//          val count = new AtomicInteger(0)
           def finish(mode: String)(port: Int)(t: Try[Boolean]): Unit = {
+            println(s"$port $t")
             Platform.runLater(() => {
-//              println(count.incrementAndGet())
               progressBar.setProgress(progressBar.getProgress + 1.0 / (portTo - portFrom))
             })
             t match {
               case Success(v) if v =>
                 Platform.runLater(() => {
                   val line = s"$mode     $port     OPEN\n"
-                  resultArea.appendText(line)
+                  Platform.runLater(() => {
+                    resultArea.appendText(line)
+                  })
                 })
               case _ =>
             }
